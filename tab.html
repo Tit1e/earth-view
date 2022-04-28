@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Earth View</title>
+    <link rel="stylesheet" href="./css/index.min.css" />
+    <link rel="stylesheet" href="./lib/element-ui/index.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- 背景图 -->
+      <div id="background-box">
+        <div class="tools" :class="{'is-edit': isEdit}">
+          <div id="edit" class="icon" @click="toggleEdit"></div>
+          <div id="setting" class="icon" @click="openDrawer"></div>
+        </div>
+        <el-drawer v-model="drawer" direction="ltr" :with-header="false" @opened="setChecked">
+          <template #default>
+              <el-tree ref="tree" :data="bookMarksData[0].children" node-key="id" show-checkbox :props="defaultProps">
+                <template #default="{ node, data }">
+                  <span class="custom-tree-node">
+                    <span>{{ data.title.trim() || data.url }}</span>
+                  </span>
+                </template>
+              </el-tree>
+          </template>
+          <template #footer>
+            <div style="flex: auto">
+              <el-button size="default" @click="save">保 存</el-button>
+            </div>
+          </template>
+        </el-drawer>
+        <ul class="ul" :class="{'is-edit': isEdit}">
+          <li
+            class="li"
+            :class="{draggable: oldIndex === index, over: (newIndex === index && oldIndex !== index)}"
+            v-for="(mark,index) in bookmarks"
+            :draggable="!isEdit"
+            @dragstart="handleDragstart(index)"
+            @dragover.prevent="handleDragover(index)"
+            @drop.prevent="handleDrop()"
+            @click="open(mark.url)"
+          >
+            <div class="link">
+              <div class="web-icon" :style="'background-image: url(' + bgUrl(mark.url) + ')'"></div>
+              <template v-if="isEdit">
+                <input class="edit-input" type="text" v-model="mark.title">
+              </template>
+              <template v-else>
+                {{mark.title.trim() || mark.url}}
+              </template>
+            </div>
+          </li>
+        </ul>
+        <img id="bg" class="photo-view" :src="background" alt="背景图">
+      </div>
+    </div>
+    <script src="./lib/vue.global.js"></script>
+    <script src="./lib/element-ui/index.full.js"></script>
+    <script src="./lib/earthview.js"></script>
+    <script src="./js/index.js"></script>
+  </body>
+</html>
